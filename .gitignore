@@ -50,3 +50,13 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+toolchain/*
+setup_nanvix.sh
+setup_nanvix.sh~
+build_nanvix.sh
+run_nanvix.sh
+.idea
+
+
+
