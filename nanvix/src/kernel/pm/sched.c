@@ -33,6 +33,7 @@ PUBLIC void sched(struct process *proc)
 {
 	proc->state = PROC_READY;
 	proc->counter = 0;
+	proc->nice = nice(-2 * NZERO);
 }
 
 /**
@@ -94,14 +95,17 @@ PUBLIC void yield(void)
 		if (p->state != PROC_READY)
 			continue;
 
-		/*
-		 * Process with higher
-		 * waiting time found.
-		 */
-		if (p->counter > next->counter)
-		{
-			next->counter++;
+
+		if(p->nice < next->nice){
 			next = p;
+		}
+
+		else if(p->nice == next->nice){
+			if (p->counter > next->counter)
+			{
+				next->counter++;
+				next = p;
+			}
 		}
 
 		/*
