@@ -23,9 +23,6 @@
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
 #include <signal.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 /**
  * @brief Schedules a process to execution.
@@ -93,75 +90,83 @@ PUBLIC void resume(struct process *proc)
  */
 PUBLIC void yield(void)
 {
-	struct process *p;	  /* Working process.     */
-	struct process *next; /* Next process to run. */
-	/* Re-schedule process for execution. */
+	struct process *p;
+	struct process *next = NULL; /* Next process to run */
+
+	/* Allow current process to use its quantum before switching */
+	if (curr_proc->state == PROC_RUNNING && curr_proc->counter > 0)
+	{
+		curr_proc->counter--;
+		return; // Continue running the current process
+	}
+
+	/* Re-schedule process if it used its time */
 	if (curr_proc->state == PROC_RUNNING)
 		sched(curr_proc);
 
-	/* Remember this process. */
 	last_proc = curr_proc;
 
-	/* Check alarm. */
+	/* Check alarm timers */
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
-		/* Skip invalid processes. */
 		if (!IS_VALID(p))
 			continue;
 
-		/* Alarm has expired. */
 		if ((p->alarm) && (p->alarm < ticks))
-			p->alarm = 0, sndsig(p, SIGALRM);
+		{
+			p->alarm = 0;
+			sndsig(p, SIGALRM);
+		}
 	}
 
-	/* Choose a process to run next. */
-
+	/* Lottery Scheduling */
 	int nb_ticket = 0;
-	int *ticket_tab = (int *)malloc(sizeof(int));
-	
-	// for setting the seed of rand
-	srand(1);
+	int ticket_tab[100]; 
 
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
-		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
 
-		// give a random number of ticket to process with no ticket
-		if (p->nice > 100)
+		// Assign tickets if not assigned
+		if (p->nice > 20 && nb_ticket < 100)
 		{
-			p->nice = rand() % 101;
+			p->nice = ticks % 21;
 		}
-		
-		// update the ticket_tab
-		for (int i = nb_ticket ; i < (nb_ticket + p->nice); i++)
+		else if (nb_ticket >= 100)
 		{
-			ticket_tab[i] = getpid();
+			p->nice = 0;
+		}
+
+		for (int i = nb_ticket; i < (nb_ticket + p->nice); i++)
+		{
+			ticket_tab[i] = p->pid;
 		}
 
 		nb_ticket += p->nice;
 	}
 
-	// choose a winner
-	int winner = rand() % nb_ticket;
-
-	// find the winner
-	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	/* Select a process only if tickets exist */
+	next = FIRST_PROC;
+	if (nb_ticket > 0)
 	{
-		if (getpid() == ticket_tab[winner])
+		int winner = ticks % nb_ticket;
+
+		for (p = FIRST_PROC; p <= LAST_PROC; p++)
 		{
-			next = p;
+			if (p->pid == ticket_tab[winner] && p->state == PROC_READY)
+			{
+				next = p;
+				break;
+			}
 		}
 	}
 
-	// free the tab
-	free(ticket_tab);
-
-	/* Switch to next process. */
+	/* Switch to next process */
 	next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
-	next->counter = PROC_QUANTUM;
+	next->counter = PROC_QUANTUM; // Assign full quantum
+
 	if (curr_proc != next)
 		switch_to(next);
 }
