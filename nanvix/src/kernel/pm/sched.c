@@ -24,6 +24,8 @@
 #include <nanvix/pm.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Schedules a process to execution.
@@ -67,17 +69,17 @@ PUBLIC void resume(struct process *proc)
 
 	for	p in process
 		si p.nice == 0
-			tirer un nb entre 0 et 100
-			nice = le nb
-		nice += p.nice;
+			nice = un nb entre 0 et 100
 		for i de nb_ticket a (nb_ticket + nice) :
 			ticket_tab[i] = p.PID;
+		end for
+		nb_ticket += p.nice;
 	end for
 
-	n = rand de 0 a nb_ticket
+	winner = rand de 0 a nb_ticket
 
 	for 
-		if p.PID == n
+		if p.PID == ticket_tab[winner]
 			next = p;
 	end for
 
@@ -113,20 +115,48 @@ PUBLIC void yield(void)
 	}
 
 	/* Choose a process to run next. */
-	next = IDLE;
+
+	int nb_ticket = 0;
+	int *ticket_tab = (int *)malloc(sizeof(int));
+	
+	// for setting the seed of rand
+	srand(1);
+
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
 		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
 
-		if ((next == IDLE || p->nice < next->nice || (p->nice == next->nice && p->counter > next->counter)))
+		// give a random number of ticket to process with no ticket
+		if (p->nice > 100)
+		{
+			p->nice = rand() % 101;
+		}
+		
+		// update the ticket_tab
+		for (int i = nb_ticket ; i < (nb_ticket + p->nice); i++)
+		{
+			ticket_tab[i] = getpid();
+		}
+
+		nb_ticket += p->nice;
+	}
+
+	// choose a winner
+	int winner = rand() % nb_ticket;
+
+	// find the winner
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		if (getpid() == ticket_tab[winner])
 		{
 			next = p;
 		}
-		else
-			p->counter++;
 	}
+
+	// free the tab
+	free(ticket_tab);
 
 	/* Switch to next process. */
 	next->priority = PRIO_USER;

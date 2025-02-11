@@ -388,17 +388,17 @@ static int sched_test4(void)
 	/* Parent process. */
 	else if (pid > 0)
 	{
-		nice(-2 * NZERO);
+		nice(50);
 		work_cpu();
-		printf("(PID: %d) Big prio fini\n", getpid());
+		printf("(PID: %d) Big nb of tickets fini\n", getpid());
 	}
 
 	/* Child process. */
 	else
 	{
-		nice(2 * NZERO);
+		nice(10);
 		work_cpu();
-		printf("(PID: %d) Low prio fini\n", getpid());
+		printf("(PID: %d) Low nb of tickets fini\n", getpid());
 		_exit(EXIT_SUCCESS);
 	}
 
