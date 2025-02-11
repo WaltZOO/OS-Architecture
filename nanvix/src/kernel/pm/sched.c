@@ -23,6 +23,7 @@
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
 #include <signal.h>
+#include <unistd.h>
 
 /**
  * @brief Schedules a process to execution.
@@ -33,7 +34,6 @@ PUBLIC void sched(struct process *proc)
 {
 	proc->state = PROC_READY;
 	proc->counter = 0;
-	proc->nice = nice(-2 * NZERO);
 }
 
 /**
@@ -65,9 +65,8 @@ PUBLIC void resume(struct process *proc)
  */
 PUBLIC void yield(void)
 {
-	struct process *p;    /* Working process.     */
+	struct process *p;	  /* Working process.     */
 	struct process *next; /* Next process to run. */
-
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
 		sched(curr_proc);
@@ -95,23 +94,10 @@ PUBLIC void yield(void)
 		if (p->state != PROC_READY)
 			continue;
 
-
-		if(p->nice < next->nice){
+		if ((next == IDLE || p->nice < next->nice || (p->nice == next->nice && p->counter > next->counter)))
+		{
 			next = p;
 		}
-
-		else if(p->nice == next->nice){
-			if (p->counter > next->counter)
-			{
-				next->counter++;
-				next = p;
-			}
-		}
-
-		/*
-		 * Increment waiting
-		 * time of process.
-		 */
 		else
 			p->counter++;
 	}
