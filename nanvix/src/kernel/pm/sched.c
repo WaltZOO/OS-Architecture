@@ -60,6 +60,32 @@ PUBLIC void resume(struct process *proc)
 		sched(proc);
 }
 
+/* Pseudo code lottery */
+	/*
+	nb_ticket = 0;
+	ticket_tab = malloc;
+
+	for	p in process
+		si p.nice == 0
+			tirer un nb entre 0 et 100
+			nice = le nb
+		nice += p.nice;
+		for i de nb_ticket a (nb_ticket + nice) :
+			ticket_tab[i] = p.PID;
+	end for
+
+	n = rand de 0 a nb_ticket
+
+	for 
+		if p.PID == n
+			next = p;
+	end for
+
+	free ticket tab
+
+	switch process
+	*/
+
 /**
  * @brief Yields the processor.
  */
