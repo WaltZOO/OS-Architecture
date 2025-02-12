@@ -87,13 +87,35 @@ PUBLIC void yield(void)
 	}
 
 	/* Choose a process to run next. */
+
+	/*
+	pseudo-code:
+
+	pour p in process
+		si p->nice < NICE_MAX / 2
+			queue1.add(p)
+		else
+			queue2.add(p)
+	fin pour
+	pour p in queue1
+		priority
+	fin pour
+	pour p in queue2
+		FIFO
+	fin pour	
+	*/
+
 	next = IDLE;
+	struct process **queue1;
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
 		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
 
+		if(p->nice < NZERO){
+			queue1[]			
+		}
 		/*
 		 * Process with higher
 		 * waiting time found.
