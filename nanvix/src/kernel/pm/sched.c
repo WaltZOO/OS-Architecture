@@ -106,36 +106,54 @@ PUBLIC void yield(void)
 	*/
 
 	next = IDLE;
-	struct process **queue1;
+	struct process *queue1[50];
+	struct process *queue2[50];
+
+	int taille1 = 0;
+	int taille2 = 0;
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
 		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
 
+		// Put all the process with nice < NZERO in queue1
 		if(p->nice < NZERO){
-			queue1[]			
-		}
-		/*
-		 * Process with higher
-		 * waiting time found.
-		 */
-		if (p->counter > next->counter)
-		{
-			next->counter++;
-			next = p;
+			queue1[taille1] = p;
+			taille1++;
 		}
 
-		/*
-		 * Increment waiting
-		 * time of process.
-		 */
+		// Put all the process with nice > NZERO in queue2
+		else if (p-> nice > NZERO){
+			queue2[taille2] = p;
+			taille2++;
+		}
+	}
+
+	// Priority scheduling for queue1
+	next = IDLE;
+	for (int i = 0; i < taille1; i++)
+	{
+		p = queue1[i];
+
+		if ((next == IDLE || p->nice < next->nice || (p->nice == next->nice && p->counter > next->counter)))
+		{
+			next = p;
+		}
 		else
 			p->counter++;
 	}
+	
+	// First Come First Served scheduling for queue2
+	if(next == IDLE){ // No process was found in queue1
+		if(taille2 != 0)
+			// We take the first element of the tab (the first came)
+			// Always 0 because we build the list at each yield
+			next = queue2[0]; 
+	}
 
-	/* Switch to next process. */
-	next->priority = PRIO_USER;
+		/* Switch to next process. */
+		next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
 	if (curr_proc != next)
