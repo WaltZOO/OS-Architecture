@@ -157,8 +157,9 @@ PUBLIC void yield(void)
 			if (p->pid == ticket_tab[winner] && p->state == PROC_READY)
 			{
 				next = p;
-				break;
 			}
+			else
+				p->counter++;
 		}
 	}
 
