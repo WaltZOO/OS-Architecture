@@ -118,13 +118,13 @@ PUBLIC void yield(void)
 			continue;
 
 		// Put all the process with nice < NZERO in queue1
-		if(p->nice < NZERO){
+		if(p->utime + p->ktime < 20){
 			queue1[taille1] = p;
 			taille1++;
 		}
 
 		// Put all the process with nice > NZERO in queue2
-		else if (p-> nice > NZERO){
+		else {
 			queue2[taille2] = p;
 			taille2++;
 		}
@@ -158,4 +158,5 @@ PUBLIC void yield(void)
 	next->counter = PROC_QUANTUM;
 	if (curr_proc != next)
 		switch_to(next);
+	
 }
