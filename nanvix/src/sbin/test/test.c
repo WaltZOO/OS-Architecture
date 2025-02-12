@@ -369,6 +369,45 @@ static int sched_test3(void)
 	return (0);
 }
 
+/**
+ * @brief Scheduling test 4.
+ *
+ * @details Spawns two processes and tests which finish first.
+ *
+ * @return Zero if passed on test, and non-zero otherwise.
+ */
+static int sched_test4(void)
+{
+	pid_t pid;
+
+	pid = fork();
+
+	/* Failed to fork(). */
+	if (pid < 0)
+		return (-1);
+
+	/* Parent process. */
+	else if (pid > 0)
+	{
+		nice(50);
+		work_cpu();
+		printf("(PID: %d) Big nb of tickets fini\n", getpid());
+	}
+
+	/* Child process. */
+	else
+	{
+		nice(10);
+		work_cpu();
+		printf("(PID: %d) Low nb of tickets fini\n", getpid());
+		_exit(EXIT_SUCCESS);
+	}
+
+	wait(NULL);
+
+	return (0);
+}
+
 /*============================================================================*
  *                             Semaphores Test                                *
  *============================================================================*/
@@ -646,6 +685,8 @@ int main(int argc, char **argv)
 				(!sched_test1()) ? "PASSED" : "FAILED");
 			printf("  scheduler stress   [%s]\n",
 				(!sched_test2() && !sched_test3()) ? "PASSED" : "FAILED");
+			printf("  test 4 [%s]\n",
+				   (!sched_test4()) ? "PASSED" : "FAILED");
 		}
 
 		/* IPC test. */
