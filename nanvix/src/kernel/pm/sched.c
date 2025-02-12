@@ -124,7 +124,7 @@ PUBLIC void yield(void)
 		}
 
 		// Put all the process with nice > NZERO in queue2
-		else if (p-> nice > NZERO){
+		else if (p->nice > NZERO){
 			queue2[taille2] = p;
 			taille2++;
 		}
