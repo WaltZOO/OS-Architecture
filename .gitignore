@@ -19,6 +19,6 @@ makefile
 nanvix.iso
 *.o
 .idea
-
+.vscode
 
 
