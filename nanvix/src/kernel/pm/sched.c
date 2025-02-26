@@ -94,12 +94,20 @@ PUBLIC void yield(void)
 		if (p->state != PROC_READY)
 			continue;
 
-		if ((next == IDLE || p->nice < next->nice || (p->nice == next->nice && p->counter > next->counter)))
-		{
-			next = p;
+		if (p->priority == PRIO_USER){
+			if ((next == IDLE || p->nice < next->nice || (p->nice == next->nice && p->counter > next->counter)))
+			{
+				next = p;
+			}
+			else
+				p->counter++;
 		}
-		else
-			p->counter++;
+		else {
+			if (next == IDLE || p->priority < next->priority || (p->priority == next->priority && p->counter > next->counter))
+				next = p;
+			else
+				p->counter++;
+		}
 	}
 
 	/* Switch to next process. */
