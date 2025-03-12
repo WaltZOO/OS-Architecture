@@ -1,4 +1,4 @@
-}/*
+/*
  * Copyright(C) 2011-2016 Pedro H. Penna <pedrohenriquepenna@gmail.com>
  *
  * This file is part of Nanvix.
@@ -22,16 +22,105 @@
 #include <nanvix/pm.h>
 #include <errno.h>
 
+#define MAX_SEM 100
 
 struct semaphore
 {
     int value;
-    struct process *waiting_queue;
+    unsigned key;
+    struct process **waiting_queue;
+    int queue_length;
 };
 
+static struct semaphore sem_tab[MAX_SEM];
 
-PUBLIC int sys_sem()
+PUBLIC sem_check(unsigned key)
 {
-    unsigned key_tab[100];
-    int nb_keys;
+    struct semaphore current_semaphore = sem_tab[0];
+    for (int i = 0; i < MAX_SEM; i++)
+    {
+        if (current_semaphore.key == key)
+            return i;
+    }
+    return -1;
+}
+
+/*
+Create a semaphore with only 1 place
+ */
+PUBLIC int sem_create(unsigned key)
+{
+    struct semaphore current_semaphore = sem_tab[0];
+    for (int i = 0; i < MAX_SEM; i++)
+    {
+        if (current_semaphore.key == NULL)
+        {
+            struct process *queue;
+            struct semaphore sem =
+                {
+                    1,
+                    key,
+                    queue,
+                    0};
+            sem_tab[i] = sem;
+            return i;
+        }
+    }
+    return -1;
+}
+
+PUBLIC int get_sem_value(int semid){
+    // semid < 0 already checked in semctl
+    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+        return -1;
+    return sem_tab[semid].value;
+}
+
+PUBLIC int set_sem_value(int semid, int val)
+{
+    // semid < 0 already checked in semctl
+    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+        return -1;
+    sem_tab[semid].value = val;
+}
+
+PUBLIC int destroy(int semid)
+{
+    // semid < 0 already checked in semctl
+    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+        return -1;
+    sem_tab[semid].value = NULL;
+    sem_tab[semid].key = NULL;
+    sem_tab[semid].waiting_queue = NULL;
+    sem_tab[semid].queue_length = NULL;
+}
+
+PUBLIC void up(int semid)
+{
+    // semid < 0 already checked in semctl
+    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+        return -1;
+    if (sem_tab[semid].value == 0)
+    {
+        wakeup_one(sem_tab[semid].waiting_queue);
+        sem_tab[semid].queue_length--;
+    }
+    else
+        sem_tab[semid].value++;
+}
+
+PUBLIC void down(int semid)
+{
+    // semid < 0 already checked in semctl
+    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+        return -1;
+    if (sem_tab[semid].value > 0)
+        sem_tab[semid].value--;
+    
+    else
+    {
+        sem_tab[semid].waiting_queue[sem_tab[semid].queue_length] = get_current_process();
+        sem_tab[semid].queue_length++;
+        sleep(sem_tab[semid].waiting_queue, 1);
+    }
 }

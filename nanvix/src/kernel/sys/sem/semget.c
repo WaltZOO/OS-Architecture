@@ -23,13 +23,8 @@
 
 PUBLIC int sys_semget(unsigned key)
 {
-    kprintf("sys semget");
-    // for (int i = 0; i < nb_keys; i++)
-    // {
-    //     if (key == key_tab[i])
-    //         return key_tab[i].sid;
-    // }
-
-    // key_tab.add = key;
-    // nb_keys++;
+    int sem_id = sem_check(key);
+    if (sem_id == -1)
+        return sem_create(key);
+    return sem_id;
 }

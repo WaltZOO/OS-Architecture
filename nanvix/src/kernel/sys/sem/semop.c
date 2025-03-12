@@ -24,12 +24,11 @@
 
 PUBLIC int sys_semop(int semid, int op)
 {
-    kprintf("sys op");
-    // for (int i = 0; i < nb_keys; i++)
-    // {
-    //     if (key == key_tab[i])
-    //         return key_tab[i].sid;
-    // }
+    if (semid < 0)
+        return -1;
 
+    if (op > 0)
+        up(semid);
+    else
+        down(semid);
 }
-
