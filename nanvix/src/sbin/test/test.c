@@ -414,7 +414,21 @@ static int sched_test3(void)
 {                                                    \
 	assert(lseek((a), 0, SEEK_SET) != -1);           \
 	assert(read((a), &(b), sizeof(b)) == sizeof(b)); \
-}                                                    \
+}      
+                                              \
+/**
+ * @brief Test the call of semaphores.
+ *
+ * @details Just call a semaphores.
+ *
+ * @returns Zero if passed on test, and non-zero otherwise.
+ */
+int semaphore_test0(void)
+{
+	unsigned key = 3;
+	semget(key);
+	return 0;
+}
 
 /**
  * @brief Producer-Consumer problem with semaphores.
@@ -423,7 +437,7 @@ static int sched_test3(void)
  *
  * @returns Zero if passed on test, and non-zero otherwise.
  */
-int semaphore_test3(void)
+int semaphore_test1(void)
 {
 	pid_t pid;                  /* Process ID.              */
 	int buffer_fd;              /* Buffer file descriptor.  */
@@ -652,8 +666,10 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "ipc"))
 		{
 			printf("Interprocess Communication Tests\n");
+			printf("  My test [%s]\n",
+				(!semaphore_test0()) ? "PASSED" : "FAILED");
 			printf("  producer consumer [%s]\n",
-				(!semaphore_test3()) ? "PASSED" : "FAILED");
+				(!semaphore_test1()) ? "PASSED" : "FAILED");
 		}
 
 		/* FPU test. */
