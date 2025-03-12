@@ -6,7 +6,6 @@ run_nanvix.sh
 nanvix/bin/*
 nanvix/doc/*
 nanvix/doxygen/*
-nanvix/include/*
 nanvix/lib/*
 nanvix/nanvix-iso/*
 nanvix/tools/*
