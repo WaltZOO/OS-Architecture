@@ -230,10 +230,4 @@
 	/* Environment variables. */
 	extern char **environ;
 
-	extern int sys_semop(int semid, int op);
-
-	extern int sys_semget(unsigned key);
-
-	extern int sys_semctl(int semid, int cmd, int val);
-
 #endif /* UNISTD_H_ */
