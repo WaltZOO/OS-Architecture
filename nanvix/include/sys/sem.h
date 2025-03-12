@@ -34,4 +34,12 @@
 	extern int semctl(int, int, int);
 	extern int semop(int, int);
 
+	extern int sem_check(unsigned key);
+	extern int sem_create(unsigned key);
+	extern int get_sem_value(int semid);
+	extern int set_sem_value(int semid, int val);
+	extern int destroy(int semid);
+	extern int up(int semid);
+	extern int down(int semid);
+
 #endif /* SEM_H_ */

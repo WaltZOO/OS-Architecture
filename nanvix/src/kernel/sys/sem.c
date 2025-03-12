@@ -20,6 +20,7 @@
 #include <nanvix/hal.h>
 #include <nanvix/klib.h>
 #include <nanvix/pm.h>
+#include <unistd.h>
 #include <errno.h>
 
 #define MAX_SEM 100
@@ -34,7 +35,7 @@ struct semaphore
 
 static struct semaphore sem_tab[MAX_SEM];
 
-PUBLIC sem_check(unsigned key)
+PUBLIC int sem_check(unsigned key)
 {
     struct semaphore current_semaphore = sem_tab[0];
     for (int i = 0; i < MAX_SEM; i++)
@@ -53,9 +54,10 @@ PUBLIC int sem_create(unsigned key)
     struct semaphore current_semaphore = sem_tab[0];
     for (int i = 0; i < MAX_SEM; i++)
     {
-        if (current_semaphore.key == NULL)
+        if (current_semaphore.key == 0)
         {
-            struct process *queue;
+            // struct process **queue;
+            struct process *queue[MAX_SEM];
             struct semaphore sem =
                 {
                     1,
@@ -69,9 +71,10 @@ PUBLIC int sem_create(unsigned key)
     return -1;
 }
 
-PUBLIC int get_sem_value(int semid){
+PUBLIC int get_sem_value(int semid)
+{
     // semid < 0 already checked in semctl
-    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+    if (semid > MAX_SEM || sem_tab[semid].value == -1)
         return -1;
     return sem_tab[semid].value;
 }
@@ -79,48 +82,70 @@ PUBLIC int get_sem_value(int semid){
 PUBLIC int set_sem_value(int semid, int val)
 {
     // semid < 0 already checked in semctl
-    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+    if (semid > MAX_SEM || sem_tab[semid].value == -1)
         return -1;
     sem_tab[semid].value = val;
+    return 0;
 }
 
 PUBLIC int destroy(int semid)
 {
     // semid < 0 already checked in semctl
-    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+    if (semid > MAX_SEM || sem_tab[semid].value == -1)
         return -1;
-    sem_tab[semid].value = NULL;
-    sem_tab[semid].key = NULL;
+    sem_tab[semid].value = -1;
+    sem_tab[semid].key = 0;
     sem_tab[semid].waiting_queue = NULL;
-    sem_tab[semid].queue_length = NULL;
+    sem_tab[semid].queue_length = -1;
+    return 0;
 }
 
-PUBLIC void up(int semid)
+PUBLIC int up(int semid)
 {
     // semid < 0 already checked in semctl
-    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+    if (semid > MAX_SEM || sem_tab[semid].value == -1)
         return -1;
     if (sem_tab[semid].value == 0)
     {
         wakeup_one(sem_tab[semid].waiting_queue);
+
+        // shift the waiting queue because one process have been awake
+        for (int i = 0; i < sem_tab[semid].queue_length - 1; i++)
+        {
+            sem_tab[semid].waiting_queue[i] = sem_tab[semid].waiting_queue[i + 1];
+        }
         sem_tab[semid].queue_length--;
+        return 0;
     }
     else
+    {
         sem_tab[semid].value++;
+        return 0;
+    }
 }
 
-PUBLIC void down(int semid)
+PUBLIC int down(int semid)
 {
     // semid < 0 already checked in semctl
-    if (semid > MAX_SEM || sem_tab[semid].key == NULL)
+    if (semid > MAX_SEM || sem_tab[semid].value == -1)
         return -1;
     if (sem_tab[semid].value > 0)
+    {
         sem_tab[semid].value--;
-    
+        return 0;
+    }
+
     else
     {
-        sem_tab[semid].waiting_queue[sem_tab[semid].queue_length] = get_current_process();
+        struct process *curr_proc = curr_proc;
+
+        // add the current process to waiting queue
+        
+        sem_tab[semid].waiting_queue[sem_tab[semid].queue_length] = curr_proc;
         sem_tab[semid].queue_length++;
-        sleep(sem_tab[semid].waiting_queue, 1);
+
+        //block the current process
+        sleep(&sem_tab[semid].waiting_queue[sem_tab[semid].queue_length - 1], 1);
+        return 0;
     }
 }

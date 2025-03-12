@@ -28,7 +28,7 @@ PUBLIC int sys_semop(int semid, int op)
         return -1;
 
     if (op > 0)
-        up(semid);
+        return up(semid);
     else
-        down(semid);
+        return down(semid);
 }
