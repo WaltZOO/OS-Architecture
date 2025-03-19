@@ -87,8 +87,6 @@ int main(int argc, char **argv)
 		return (EXIT_FAILURE);
 
 	useradd(file, name, password, uid, gid);
-	useradd(file, "user1", "password1", 1001, 1001);
-	useradd(file, "user2", "password2", 1002, 1002);
 
 	/* House keeping. */
 	fclose(file);

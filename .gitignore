@@ -8,7 +8,6 @@ nanvix/doc/*
 nanvix/doxygen/*
 nanvix/lib/*
 nanvix/nanvix-iso/*
-nanvix/tools/*
 nanvix/bochsout.txt
 CREDITS
 hdd.img
