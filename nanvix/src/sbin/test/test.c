@@ -586,32 +586,42 @@ int fpu_test(void)
 	return (result == 0x40b2aaaa);
 }
 
-int muser_test(void)
-{
-	while (1) {
+/**
+ * @details Security testing module.
+ *
+ * @details Performs a fork bomb test
+ *
+ * @returns Zero if passed on test, and non-zero otherwise.
+ */
+/*============================================================================*
+ *                                   Security                                 *
+ *============================================================================*/
+int forkbomb_test(){
+	while (1)
 		fork();
-	}
+	return 0;
 }
 
 	/*============================================================================*
 	 *                                   main                                     *
 	 *============================================================================*/
 
-	/**
-	 * @brief Prints program usage and exits.
-	 *
-	 * @details Prints the program usage and exists gracefully.
-	 */
-	static void usage(void)
-	{
-		printf("Usage: test [options]\n\n");
-		printf("Brief: Performs regression tests on Nanvix.\n\n");
-		printf("Options:\n");
-		printf("  fpu   Floating Point Unit Test\n");
-		printf("  io    I/O Test\n");
-		printf("  ipc   Interprocess Communication Test\n");
-		printf("  swp   Swapping Test\n");
-		printf("  sched Scheduling Test\n");
+/**
+ * @brief Prints program usage and exits.
+ *
+ * @details Prints the program usage and exists gracefully.
+ */
+static void usage(void)
+{
+	printf("Usage: test [options]\n\n");
+	printf("Brief: Performs regression tests on Nanvix.\n\n");
+	printf("Options:\n");
+	printf("  fpu   Floating Point Unit Test\n");
+	printf("  io    I/O Test\n");
+	printf("  ipc   Interprocess Communication Test\n");
+	printf("  swp   Swapping Test\n");
+	printf("  sched Scheduling Test\n");
+	printf("  sec 	Security Test\n");
 
 		exit(EXIT_SUCCESS);
 	}
@@ -663,21 +673,21 @@ int muser_test(void)
 					   (!semaphore_test3()) ? "PASSED" : "FAILED");
 			}
 
-			/* FPU test. */
-			else if (!strcmp(argv[i], "fpu"))
-			{
-				printf("Float Point Unit Test\n");
-				printf("  Result [%s]\n",
-					   (!fpu_test()) ? "PASSED" : "FAILED");
-			}
+		/* FPU test. */
+		else if (!strcmp(argv[i], "fpu"))
+		{
+			printf("Float Point Unit Test\n");
+			printf("  Result [%s]\n",
+				(!fpu_test()) ? "PASSED" : "FAILED");
+		}
 
-			/*Multi_user test.*/
-				else if (!strcmp(argv[i], "muser"))
-			{
-				printf("Multi User  Test\n");
-				printf("  Result [%s]\n",
-					   (!muser_test()) ? "PASSED" : "FAILED");
-			}
+		/* Security test. */
+		else if (!strcmp(argv[i], "sec"))
+		{
+			printf("Security Test\n");
+			printf("  fork bomb [%s]\n",
+				   (!forkbomb_test()) ? "PASSED" : "FAILED");
+		}
 
 			/* Wrong usage. */
 			else
