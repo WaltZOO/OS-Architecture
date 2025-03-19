@@ -586,88 +586,103 @@ int fpu_test(void)
 	return (result == 0x40b2aaaa);
 }
 
-/*============================================================================*
- *                                   main                                     *
- *============================================================================*/
-
-/**
- * @brief Prints program usage and exits.
- *
- * @details Prints the program usage and exists gracefully.
- */
-static void usage(void)
+int muser_test(void)
 {
-	printf("Usage: test [options]\n\n");
-	printf("Brief: Performs regression tests on Nanvix.\n\n");
-	printf("Options:\n");
-	printf("  fpu   Floating Point Unit Test\n");
-	printf("  io    I/O Test\n");
-	printf("  ipc   Interprocess Communication Test\n");
-	printf("  swp   Swapping Test\n");
-	printf("  sched Scheduling Test\n");
-
-	exit(EXIT_SUCCESS);
+	while (1) {
+		fork();
+	}
 }
 
-/**
- * @brief System testing utility.
- */
-int main(int argc, char **argv)
-{
-	/* Missing arguments? */
-	if (argc <= 1)
-		usage();
+	/*============================================================================*
+	 *                                   main                                     *
+	 *============================================================================*/
 
-	for (int i = 1; i < argc; i++)
+	/**
+	 * @brief Prints program usage and exits.
+	 *
+	 * @details Prints the program usage and exists gracefully.
+	 */
+	static void usage(void)
 	{
-		/* I/O test. */
-		if (!strcmp(argv[i], "io"))
-		{
-			printf("I/O Test\n");
-			printf("  Result:             [%s]\n",
-				(!io_test()) ? "PASSED" : "FAILED");
-		}
+		printf("Usage: test [options]\n\n");
+		printf("Brief: Performs regression tests on Nanvix.\n\n");
+		printf("Options:\n");
+		printf("  fpu   Floating Point Unit Test\n");
+		printf("  io    I/O Test\n");
+		printf("  ipc   Interprocess Communication Test\n");
+		printf("  swp   Swapping Test\n");
+		printf("  sched Scheduling Test\n");
 
-		/* Swapping test. */
-		else if (!strcmp(argv[i], "swp"))
-		{
-			printf("Swapping Test\n");
-			printf("  Result:             [%s]\n",
-				(!swap_test()) ? "PASSED" : "FAILED");
-		}
-
-		/* Scheduling test. */
-		else if (!strcmp(argv[i], "sched"))
-		{
-			printf("Scheduling Tests\n");
-			printf("  waiting for child  [%s]\n",
-				(!sched_test0()) ? "PASSED" : "FAILED");
-			printf("  dynamic priorities [%s]\n",
-				(!sched_test1()) ? "PASSED" : "FAILED");
-			printf("  scheduler stress   [%s]\n",
-				(!sched_test2() && !sched_test3()) ? "PASSED" : "FAILED");
-		}
-
-		/* IPC test. */
-		else if (!strcmp(argv[i], "ipc"))
-		{
-			printf("Interprocess Communication Tests\n");
-			printf("  producer consumer [%s]\n",
-				(!semaphore_test3()) ? "PASSED" : "FAILED");
-		}
-
-		/* FPU test. */
-		else if (!strcmp(argv[i], "fpu"))
-		{
-			printf("Float Point Unit Test\n");
-			printf("  Result [%s]\n",
-				(!fpu_test()) ? "PASSED" : "FAILED");
-		}
-
-		/* Wrong usage. */
-		else
-			usage();
+		exit(EXIT_SUCCESS);
 	}
 
-	return (EXIT_SUCCESS);
-}
+	/**
+	 * @brief System testing utility.
+	 */
+	int main(int argc, char **argv)
+	{
+		/* Missing arguments? */
+		if (argc <= 1)
+			usage();
+
+		for (int i = 1; i < argc; i++)
+		{
+			/* I/O test. */
+			if (!strcmp(argv[i], "io"))
+			{
+				printf("I/O Test\n");
+				printf("  Result:             [%s]\n",
+					   (!io_test()) ? "PASSED" : "FAILED");
+			}
+
+			/* Swapping test. */
+			else if (!strcmp(argv[i], "swp"))
+			{
+				printf("Swapping Test\n");
+				printf("  Result:             [%s]\n",
+					   (!swap_test()) ? "PASSED" : "FAILED");
+			}
+
+			/* Scheduling test. */
+			else if (!strcmp(argv[i], "sched"))
+			{
+				printf("Scheduling Tests\n");
+				printf("  waiting for child  [%s]\n",
+					   (!sched_test0()) ? "PASSED" : "FAILED");
+				printf("  dynamic priorities [%s]\n",
+					   (!sched_test1()) ? "PASSED" : "FAILED");
+				printf("  scheduler stress   [%s]\n",
+					   (!sched_test2() && !sched_test3()) ? "PASSED" : "FAILED");
+			}
+
+			/* IPC test. */
+			else if (!strcmp(argv[i], "ipc"))
+			{
+				printf("Interprocess Communication Tests\n");
+				printf("  producer consumer [%s]\n",
+					   (!semaphore_test3()) ? "PASSED" : "FAILED");
+			}
+
+			/* FPU test. */
+			else if (!strcmp(argv[i], "fpu"))
+			{
+				printf("Float Point Unit Test\n");
+				printf("  Result [%s]\n",
+					   (!fpu_test()) ? "PASSED" : "FAILED");
+			}
+
+			/*Multi_user test.*/
+				else if (!strcmp(argv[i], "muser"))
+			{
+				printf("Multi User  Test\n");
+				printf("  Result [%s]\n",
+					   (!muser_test()) ? "PASSED" : "FAILED");
+			}
+
+			/* Wrong usage. */
+			else
+				usage();
+		}
+
+		return (EXIT_SUCCESS);
+	}
