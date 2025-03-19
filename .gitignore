@@ -15,7 +15,7 @@ hdd.img
 initrd.img
 LICENSE
 makefile
-nanvix.iso
+nanvix/nanvix.iso
 *.o
 .idea
 
