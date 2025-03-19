@@ -96,8 +96,8 @@ function passwords
 
 	bin/useradd $file root root $ROOTGID $ROOTUID
 	bin/useradd $file noob noob $NOOBUID $NOOBGID
-	bin/useradd $file user1 p1 2 2
-	bin/useradd $file user2 p2 3 3
+	bin/useradd $file user1 password1 2 2
+	bin/useradd $file user2 password2 3 3
 
 	# Let's care about security...
 	if [ "$EDUCATIONAL_KERNEL" == "0" ]; then

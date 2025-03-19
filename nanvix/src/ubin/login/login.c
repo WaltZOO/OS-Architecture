@@ -88,7 +88,7 @@ found:
 /**
  * @brief Print all users.
  */
-static void AllInForTheUsersIfYouKnowYouKnow(void)
+static void printUsers(void)
 {
 	int file;		  /* Passwords file.  */
 	struct account a; /* Working account. */
@@ -125,9 +125,9 @@ static int login(void)
 	char name[USERNAME_MAX];
 	char password[PASSWORD_MAX];
 
-	AllInForTheUsersIfYouKnowYouKnow();
+	printUsers();
 
-		printf("login: ");
+	printf("login: ");
 	fgets(name, USERNAME_MAX, stdin);
 	printf("password: ");
 	fgets(password, PASSWORD_MAX, stdin);

@@ -586,20 +586,19 @@ int fpu_test(void)
 	return (result == 0x40b2aaaa);
 }
 
-/*============================================================================*
- *                             MultiUser test                                 *
- *============================================================================*/
-
 /**
- * @brief Performs infinite fork to test if non root user are stopped when creating too much process.
+ * @details Security testing module.
+ *
+ * @details Performs a fork bomb test
+ *
+ * @returns Zero if passed on test, and non-zero otherwise.
  */
-static int bomb(void)
-{
+/*============================================================================*
+ *                                   Security                                 *
+ *============================================================================*/
+int forkbomb_test(){
 	while (1)
-	{
 		fork();
-	}
-
 	return 0;
 }
 
@@ -622,7 +621,7 @@ static void usage(void)
 	printf("  ipc   Interprocess Communication Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
-	printf("  mult MultiUser Test\n");
+	printf("  sec 	Security Test\n");
 
 	exit(EXIT_SUCCESS);
 }
@@ -682,12 +681,12 @@ int main(int argc, char **argv)
 				(!fpu_test()) ? "PASSED" : "FAILED");
 		}
 
-		/* MultiUser test. */
-		else if (!strcmp(argv[i], "mult"))
+		/* Security test. */
+		else if (!strcmp(argv[i], "sec"))
 		{
-			printf("MultiUser Test\n");
-			printf("  bomb [%s]\n",
-				(!bomb()) ? "PASSED" : "FAILED");
+			printf("Security Test\n");
+			printf("  fork bomb [%s]\n",
+				   (!forkbomb_test()) ? "PASSED" : "FAILED");
 		}
 
 		/* Wrong usage. */
