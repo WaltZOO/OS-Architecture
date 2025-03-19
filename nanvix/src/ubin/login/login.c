@@ -86,6 +86,36 @@ found:
 }
 
 /**
+ * @brief Print all users.
+ */
+static void AllInForTheUsersIfYouKnowYouKnow(void)
+{
+	int file;		  /* Passwords file.  */
+	struct account a; /* Working account. */
+
+	/* Open passwords file. */
+	if ((file = open("/etc/passwords", O_RDONLY)) == -1)
+	{
+		return;
+	}
+
+	/* Search in the  passwords file. */
+	printf("List of users & uid\n");
+
+	while (read(file, &a, sizeof(struct account)))
+	{
+		account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
+
+		/* user found. */
+		printf("	%s %d\n", a.name, a.uid);
+	}
+	printf("\n");
+
+	/* House keeping. */
+	close(file);
+}
+
+/**
  * @brief Attempts to login.
  *
  * @returns One if successful login and false otherwise.
@@ -95,7 +125,9 @@ static int login(void)
 	char name[USERNAME_MAX];
 	char password[PASSWORD_MAX];
 
-	printf("login: ");
+	AllInForTheUsersIfYouKnowYouKnow();
+
+		printf("login: ");
 	fgets(name, USERNAME_MAX, stdin);
 	printf("password: ");
 	fgets(password, PASSWORD_MAX, stdin);

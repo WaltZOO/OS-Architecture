@@ -587,6 +587,23 @@ int fpu_test(void)
 }
 
 /*============================================================================*
+ *                             MultiUser test                                 *
+ *============================================================================*/
+
+/**
+ * @brief Performs infinite fork to test if non root user are stopped when creating too much process.
+ */
+static int bomb(void)
+{
+	while (1)
+	{
+		fork();
+	}
+
+	return 0;
+}
+
+/*============================================================================*
  *                                   main                                     *
  *============================================================================*/
 
@@ -605,6 +622,7 @@ static void usage(void)
 	printf("  ipc   Interprocess Communication Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
+	printf("  mult MultiUser Test\n");
 
 	exit(EXIT_SUCCESS);
 }
@@ -662,6 +680,14 @@ int main(int argc, char **argv)
 			printf("Float Point Unit Test\n");
 			printf("  Result [%s]\n",
 				(!fpu_test()) ? "PASSED" : "FAILED");
+		}
+
+		/* MultiUser test. */
+		else if (!strcmp(argv[i], "mult"))
+		{
+			printf("MultiUser Test\n");
+			printf("  bomb [%s]\n",
+				(!bomb()) ? "PASSED" : "FAILED");
 		}
 
 		/* Wrong usage. */
