@@ -120,6 +120,9 @@
 	#define PROC_FSS    124  /**< FPU Saved Status offset.       */
 	/**@}*/
 
+	#define MAX_PROC_PER_USER 10
+	#define MAX_USER 5
+
 #ifndef _ASM_FILE_
 
 	/**
@@ -285,6 +288,7 @@
 	EXTERN struct process *last_proc;
 	EXTERN pid_t next_pid;
 	EXTERN unsigned nprocs;
+	EXTERN int nb_proc_user[MAX_USER];
 
 #endif /* _ASM_FILE */
 
