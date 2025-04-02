@@ -36,89 +36,90 @@
 	#include <sys/types.h>
 	#include <limits.h>
 	#include <signal.h>
+	#include <sys/sem.h>
 
-	/**
-	 * @name Superuser credentials
-	 */
-	/**@{*/
-	#define SUPERUSER  0 /**< Superuser ID.       */
-	#define SUPERGROUP 0 /**< Superuser group ID. */
-	/**@}*/
+/**
+ * @name Superuser credentials
+ */
+/**@{*/
+#define SUPERUSER 0	 /**< Superuser ID.       */
+#define SUPERGROUP 0 /**< Superuser group ID. */
+/**@}*/
 
-	/**
-	 * @name Important system processes
-	 */
-	/**@{*/
-	#define IDLE (&proctab[0]) /**< idle process. */
-	#define INIT (&proctab[1]) /**< init process. */
-	/**@}*/
+/**
+ * @name Important system processes
+ */
+/**@{*/
+#define IDLE (&proctab[0]) /**< idle process. */
+#define INIT (&proctab[1]) /**< init process. */
+/**@}*/
 
-	/**
-	 * @name Process table boundaries
-	 */
-	/**@{*/
-	#define FIRST_PROC ((&proctab[1]))           /**< First process. */
-	#define LAST_PROC ((&proctab[PROC_MAX - 1])) /**< Last process.  */
-	/**@}*/
+/**
+ * @name Process table boundaries
+ */
+/**@{*/
+#define FIRST_PROC ((&proctab[1]))			 /**< First process. */
+#define LAST_PROC ((&proctab[PROC_MAX - 1])) /**< Last process.  */
+/**@}*/
 
-	/**
-	 * @name Process flags
-	 */
-	/**@{*/
-	#define PROC_NEW 0 /**< Is the process new?     */
-	#define PROC_SYS 1 /**< Handling a system call? */
-	/**@}*/
+/**
+ * @name Process flags
+ */
+/**@{*/
+#define PROC_NEW 0 /**< Is the process new?     */
+#define PROC_SYS 1 /**< Handling a system call? */
+/**@}*/
 
-	/**
-	 * @name Process parameters
-	 */
-	/**@{*/
-	#define PROC_QUANTUM 50 /**< Quantum.                  */
-	#define NR_PREGIONS   4 /**< Number of memory regions. */
-	/**@}*/
+/**
+ * @name Process parameters
+ */
+/**@{*/
+#define PROC_QUANTUM 50 /**< Quantum.                  */
+#define NR_PREGIONS 4	/**< Number of memory regions. */
+/**@}*/
 
-	/**
-	 * @name Process priorities
-	 */
-	/**@{*/
-	#define PRIO_IO         -100 /**< Waiting for block operation. */
-	#define PRIO_BUFFER      -80 /**< Waiting for buffer.          */
-	#define PRIO_INODE       -60 /**< Waiting for inode.           */
-	#define PRIO_SUPERBLOCK  -40 /**< Waiting for super block.     */
-	#define PRIO_REGION      -20 /**< Waiting for memory region.   */
-	#define PRIO_TTY           0 /**< Waiting for terminal I/O.    */
-	#define PRIO_SIG          20 /**< Waiting for signal.          */
-	#define PRIO_USER         40 /**< User priority.               */
-	/**@}*/
+/**
+ * @name Process priorities
+ */
+/**@{*/
+#define PRIO_IO -100		/**< Waiting for block operation. */
+#define PRIO_BUFFER -80		/**< Waiting for buffer.          */
+#define PRIO_INODE -60		/**< Waiting for inode.           */
+#define PRIO_SUPERBLOCK -40 /**< Waiting for super block.     */
+#define PRIO_REGION -20		/**< Waiting for memory region.   */
+#define PRIO_TTY 0			/**< Waiting for terminal I/O.    */
+#define PRIO_SIG 20			/**< Waiting for signal.          */
+#define PRIO_USER 40		/**< User priority.               */
+/**@}*/
 
-	/**
-	 * @name Process states
-	 */
-	/**@{*/
-	#define PROC_DEAD     0 /**< Dead.                      */
-	#define PROC_ZOMBIE   1 /**< Zombie.                    */
-	#define PROC_RUNNING  2 /**< Running.                   */
-	#define PROC_READY    3 /**< Ready to execute.          */
-	#define PROC_WAITING  4 /**< Waiting (interruptible).   */
-	#define PROC_SLEEPING 5 /**< Waiting (uninterruptible). */
-	#define PROC_STOPPED  6 /**< Stopped.                   */
-	/**@}*/
+/**
+ * @name Process states
+ */
+/**@{*/
+#define PROC_DEAD 0		/**< Dead.                      */
+#define PROC_ZOMBIE 1	/**< Zombie.                    */
+#define PROC_RUNNING 2	/**< Running.                   */
+#define PROC_READY 3	/**< Ready to execute.          */
+#define PROC_WAITING 4	/**< Waiting (interruptible).   */
+#define PROC_SLEEPING 5 /**< Waiting (uninterruptible). */
+#define PROC_STOPPED 6	/**< Stopped.                   */
+/**@}*/
 
-	/**
-	 * @name Offsets to hard-coded fields of a process
-	 */
-	/**@{*/
-	#define PROC_KESP      0 /**< Kernel stack pointer offset.   */
-	#define PROC_CR3       4 /**< Page directory pointer offset. */
-	#define PROC_INTLVL    8 /**< Interrupt level offset.        */
-	#define PROC_FLAGS    12 /**< Process flags.                 */
-	#define PROC_RECEIVED 16 /**< Received signals offset.       */
-	#define PROC_KSTACK   20 /**< Kernel stack pointer offset.   */
-	#define PROC_RESTORER 24 /**< Signal restorer.               */
-	#define PROC_HANDLERS 28 /**< Signal handlers offset.        */
-	#define PROC_IRQLVL 120  /**< IRQ Level offset.              */
-	#define PROC_FSS    124  /**< FPU Saved Status offset.       */
-	/**@}*/
+/**
+ * @name Offsets to hard-coded fields of a process
+ */
+/**@{*/
+#define PROC_KESP 0		 /**< Kernel stack pointer offset.   */
+#define PROC_CR3 4		 /**< Page directory pointer offset. */
+#define PROC_INTLVL 8	 /**< Interrupt level offset.        */
+#define PROC_FLAGS 12	 /**< Process flags.                 */
+#define PROC_RECEIVED 16 /**< Received signals offset.       */
+#define PROC_KSTACK 20	 /**< Kernel stack pointer offset.   */
+#define PROC_RESTORER 24 /**< Signal restorer.               */
+#define PROC_HANDLERS 28 /**< Signal handlers offset.        */
+#define PROC_IRQLVL 120	 /**< IRQ Level offset.              */
+#define PROC_FSS 124	 /**< FPU Saved Status offset.       */
+						 /**@}*/
 
 #ifndef _ASM_FILE_
 
@@ -222,7 +223,7 @@
 
     EXTERN void sndsig(struct process *, int);
 	EXTERN void wakeup(struct process **);
-	EXTERN void wakeup_one(struct process **);
+	EXTERN void wakeup_one(struct process **chain);
 	EXTERN void yield(void);
 
 	/**

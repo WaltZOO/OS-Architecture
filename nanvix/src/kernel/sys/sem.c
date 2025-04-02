@@ -22,16 +22,16 @@
 #include <nanvix/pm.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/sem.h>
 
-#define MAX_SEM 100
+// #define MAX_SEM 100
 
-struct semaphore
-{
-    int value;
-    unsigned key;
-    struct process **waiting_queue;
-    int queue_length;
-};
+// struct semaphore
+// {
+//     int value;
+//     unsigned key;
+//     struct process **waiting_queue;
+// };
 
 static struct semaphore sem_tab[MAX_SEM];
 
@@ -62,8 +62,7 @@ PUBLIC int sem_create(unsigned key)
                 {
                     1,
                     key,
-                    queue,
-                    0};
+                    queue};
             sem_tab[i] = sem;
             return i;
         }
@@ -95,8 +94,6 @@ PUBLIC int destroy(int semid)
         return -1;
     sem_tab[semid].value = -1;
     sem_tab[semid].key = 0;
-    sem_tab[semid].waiting_queue = NULL;
-    sem_tab[semid].queue_length = -1;
     return 0;
 }
 
@@ -105,23 +102,15 @@ PUBLIC int up(int semid)
     // semid < 0 already checked in semctl
     if (semid < 0 || semid > MAX_SEM || sem_tab[semid].value == -1)
         return -1;
-    if (sem_tab[semid].value == 0)
-    {
+    disable_interrupts();
+    sem_tab[semid].value++;
+    if (sem_tab[semid].value <= 0){
+        enable_interrupts();
         wakeup_one(sem_tab[semid].waiting_queue);
-
-        // shift the waiting queue because one process have been awake
-        for (int i = 0; i < sem_tab[semid].queue_length - 1; i++)
-        {
-            sem_tab[semid].waiting_queue[i] = sem_tab[semid].waiting_queue[i + 1];
-        }
-        sem_tab[semid].queue_length--;
         return 0;
     }
-    else
-    {
-        sem_tab[semid].value++;
-        return 0;
-    }
+    enable_interrupts();
+    return 0;
 }
 
 PUBLIC int down(int semid)
@@ -129,23 +118,18 @@ PUBLIC int down(int semid)
     // semid < 0 already checked in semctl
     if (semid > MAX_SEM || sem_tab[semid].value == -1)
         return -1;
-    if (sem_tab[semid].value > 0)
+    disable_interrupts();
+    sem_tab[semid].value--;
+
+    if (sem_tab[semid].value < 0)
     {
-        sem_tab[semid].value--;
+        //sem_tab[semid].waiting_queue[-(sem_tab[semid].value)] = curr_proc;
+        // block the current process
+        enable_interrupts();
+        sleep(sem_tab[semid].waiting_queue, 1);
         return 0;
     }
-
-    else
-    {
-        struct process *curr_proc = curr_proc;
-
-        // add the current process to waiting queue
-        
-        sem_tab[semid].waiting_queue[sem_tab[semid].queue_length] = curr_proc;
-        sem_tab[semid].queue_length++;
-
-        //block the current process
-        sleep(&sem_tab[semid].waiting_queue[sem_tab[semid].queue_length - 1], 1);
-        return 0;
-    }
+    enable_interrupts();
+    return 0;
+    
 }

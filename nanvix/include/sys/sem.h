@@ -30,6 +30,17 @@
 /**@}*/
 
 /* Forward definitions. */
+
+#define MAX_SEM 100
+
+struct semaphore
+{
+    int value;
+    unsigned key;
+    struct process **waiting_queue;
+};
+
+
 extern int semget(unsigned);
 extern int semctl(int, int, int);
 extern int semop(int, int);

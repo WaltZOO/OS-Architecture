@@ -22,6 +22,13 @@
 #include <nanvix/klib.h>
 #include <nanvix/pm.h>
 
+
+// struct semaphore
+// {
+// 	struct process **waiting_queue;
+// };
+// static struct semaphore sem_tab[MAX_SEM];
+
 /**
  * @brief Sleeping chain for idle process.
  */
@@ -117,6 +124,7 @@ PUBLIC void wakeup_one(struct process **chain)
 	 * we expect that it is the only process in the
 	 * system and it is doing some busy-waiting.
 	 */
+	int i = 0;
 	if (idle_chain == chain)
 	{
 		idle_chain = NULL;
@@ -124,5 +132,12 @@ PUBLIC void wakeup_one(struct process **chain)
 	}
 
 	/* Wakeup the first process. */
-	sched(*chain);
+	sched(chain[0]);
+
+	// shift the waiting queue because one process have been awake
+
+	while(chain[i] != NULL){
+		chain[i] = chain[i + 1];
+		i++;
+	}
 }
