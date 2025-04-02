@@ -122,6 +122,6 @@ PUBLIC void pm_init(void)
 	IDLE->chain = NULL;
 
 	nprocs++;
-
+	nb_proc_user[IDLE->euid] = 1;
 	enable_interrupts();
 }

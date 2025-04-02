@@ -48,6 +48,8 @@ PUBLIC pid_t sys_fork(void)
 		return (-EAGAIN);
 
 #endif
+	if ((nb_proc_user[curr_proc->euid] + 1 >= MAX_PROC_PER_USER) && (!IS_SUPERUSER(curr_proc)))
+		return (-EAGAIN);
 
 	/* Search for a free process. */
 	for (proc = FIRST_PROC; proc <= LAST_PROC; proc++)
