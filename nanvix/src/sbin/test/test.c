@@ -586,6 +586,22 @@ int fpu_test(void)
 	return (result == 0x40b2aaaa);
 }
 
+/**
+ * @details Security testing module.
+ *
+ * @details Performs a fork bomb test
+ *
+ * @returns Zero if passed on test, and non-zero otherwise.
+ */
+/*============================================================================*
+ *                                   Security                                 *
+ *============================================================================*/
+int forkbomb_test(){
+	while (1)
+		fork();
+	return 0;
+}
+
 /*============================================================================*
  *                                   main                                     *
  *============================================================================*/
@@ -605,6 +621,7 @@ static void usage(void)
 	printf("  ipc   Interprocess Communication Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
+	printf("  sec 	Security Test\n");
 
 	exit(EXIT_SUCCESS);
 }
@@ -662,6 +679,14 @@ int main(int argc, char **argv)
 			printf("Float Point Unit Test\n");
 			printf("  Result [%s]\n",
 				(!fpu_test()) ? "PASSED" : "FAILED");
+		}
+
+		/* Security test. */
+		else if (!strcmp(argv[i], "sec"))
+		{
+			printf("Security Test\n");
+			printf("  fork bomb [%s]\n",
+				   (!forkbomb_test()) ? "PASSED" : "FAILED");
 		}
 
 		/* Wrong usage. */
