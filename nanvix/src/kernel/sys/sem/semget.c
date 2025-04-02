@@ -16,30 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Nanvix. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <nanvix/syscall.h>
+#include <nanvix/klib.h>
+#include <sys/sem.h>
+#include <nanvix/const.h>
 
-#ifndef SEM_H_
-#define SEM_H_
-
-/**
- * @brief Comand values for semaphores.
- */
-/**@{*/
-#define GETVAL 0   /**< Returns the value of a semaphore. */
-#define SETVAL 1   /**< Sets the value of a semaphore.    */
-#define IPC_RMID 3 /**< Destroys a semaphore.            */
-/**@}*/
-
-/* Forward definitions. */
-extern int semget(unsigned);
-extern int semctl(int, int, int);
-extern int semop(int, int);
-
-extern int sem_check(unsigned key);
-extern int sem_create(unsigned key);
-extern int get_sem_value(int semid);
-extern int set_sem_value(int semid, int val);
-extern int destroy(int semid);
-extern int up(int semid);
-extern int down(int semid);
-
-#endif /* SEM_H_ */
+PUBLIC int sys_semget(unsigned key)
+{
+    int sem_id = sem_check(key);
+    if (sem_id == -1)
+        return sem_create(key);
+    return sem_id;
+}

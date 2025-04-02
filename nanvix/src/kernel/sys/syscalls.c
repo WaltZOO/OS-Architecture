@@ -24,7 +24,7 @@
 /*
  * System calls table.
  */
-PUBLIC void (*syscalls_table[NR_SYSCALLS])(void)  = {
+PUBLIC void (*syscalls_table[NR_SYSCALLS])(void) = {
 	(void (*)(void))&sys_alarm,
 	(void (*)(void))&sys_brk,
 	(void (*)(void))&sys_fork,
@@ -73,7 +73,6 @@ PUBLIC void (*syscalls_table[NR_SYSCALLS])(void)  = {
 	(void (*)(void))&sys_shutdown,
 	(void (*)(void))&sys_ps,
 	(void (*)(void))&sys_gticks,
-    NULL,
-    NULL,
-    NULL
-};
+	(void (*)(void))&sys_semget,
+	(void (*)(void))&sys_semctl,
+	(void (*)(void))&sys_semop};

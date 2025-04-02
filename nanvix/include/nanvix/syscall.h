@@ -264,6 +264,23 @@
 	 */
 	EXTERN int sys_gticks(void);
 
+// WARNING : CHANGE THE SIGNATURE, THIS IS JUST TEMPORARY
+
+	/*
+	 * semget gets the semaphore of name key and creates it if it does not exist
+	 */
+	EXTERN int sys_semget(unsigned key);
+
+	/*
+	 * semctl performs control operations on the semaphore
+	 */
+	EXTERN int sys_semctl(int semid, int cmd, int val);
+
+	/*
+	 * semop performs operations on the semaphore
+	 */
+	EXTERN int sys_semop(int semid, int op);
+
 #endif /* _ASM_FILE_ */
 
 #endif /* NANVIX_SYSCALL_H_ */
