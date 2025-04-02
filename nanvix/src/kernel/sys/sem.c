@@ -40,6 +40,7 @@ PUBLIC int sem_check(unsigned key)
     struct semaphore current_semaphore = sem_tab[0];
     for (int i = 0; i < MAX_SEM; i++)
     {
+        current_semaphore = sem_tab[i];
         if (current_semaphore.key == key)
             return i;
     }
@@ -54,9 +55,9 @@ PUBLIC int sem_create(unsigned key)
     struct semaphore current_semaphore = sem_tab[0];
     for (int i = 0; i < MAX_SEM; i++)
     {
+        current_semaphore = sem_tab[i];
         if (current_semaphore.key == 0)
         {
-            // struct process **queue;
             struct process *queue[MAX_SEM];
             struct semaphore sem =
                 {
@@ -66,6 +67,7 @@ PUBLIC int sem_create(unsigned key)
             sem_tab[i] = sem;
             return i;
         }
+        
     }
     return -1;
 }
@@ -123,7 +125,6 @@ PUBLIC int down(int semid)
 
     if (sem_tab[semid].value < 0)
     {
-        //sem_tab[semid].waiting_queue[-(sem_tab[semid].value)] = curr_proc;
         // block the current process
         enable_interrupts();
         sleep(sem_tab[semid].waiting_queue, 1);
