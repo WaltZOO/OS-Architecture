@@ -52,19 +52,25 @@ PUBLIC pid_t sys_fork(void)
 	if ((nb_proc_user[curr_proc->euid] + 1 >= MAX_PROC_PER_USER) && (!IS_SUPERUSER(curr_proc)))
 		return (-EAGAIN);
 
-	/* Search for a free process. */
-	for (proc = FIRST_PROC; proc <= LAST_PROC; proc++)
-	{
-		/* Found. */
-		if (!IS_VALID(proc))
-			goto found;
-	}
+	// for (int i = 0; i < 5; i++){
+	// 	kprintf("%d process for user %d\n", nb_proc_user[i], i);
+	// }
+
+		/* Search for a free process. */
+		for (proc = FIRST_PROC; proc <= LAST_PROC; proc++)
+		{
+			/* Found. */
+			if (!IS_VALID(proc))
+				goto found;
+		}
 
 	kprintf("process table overflow");
 
 	return (-EAGAIN);
 
 found:
+
+	kprintf("1 process created");
 
 	/* Mark process as beeing created. */
 	proc->flags = 1 << PROC_NEW;
