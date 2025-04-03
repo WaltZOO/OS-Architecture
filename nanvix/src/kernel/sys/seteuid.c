@@ -28,7 +28,6 @@
  */
 PUBLIC int sys_seteuid(uid_t uid)
 {
-	kprintf("ici");
 	curr_proc->euid = uid;
 	return (0);
 }

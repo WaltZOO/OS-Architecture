@@ -9,14 +9,23 @@
 #include <nanvix/config.h>
 #include <string.h>
 
-int main (int argc, char ** argv) {
-    if (argc < 2) {
-        printf("USAGE : su [user]\n");
-        return 0;
-    }
+uid_t uid;
 
+/**
+ * @brief Authenticates a user in the system.
+ *
+ * @param name     User name.
+ * @param password User's password.
+ *
+ * @returns One if the user has authentication and zero otherwise.
+ */
+static int authenticate(const char *name, const char *password)
+{
+    int ret;          /* Return value.    */
     int file;         /* Passwords file.  */
     struct account a; /* Working account. */
+
+    ret = 1;
 
     /* Open passwords file. */
     if ((file = open("/etc/passwords", O_RDONLY)) == -1)
@@ -24,13 +33,6 @@ int main (int argc, char ** argv) {
         fprintf(stderr, "cannot open password file\n");
         return (0);
     }
-
-    printf("Please enter password: ");
-
-    char *name = argv[1];
-    char password[PASSWORD_MAX];
-
-    fgets(password, PASSWORD_MAX, stdin);
 
     /* Search in the  passwords file. */
     while (read(file, &a, sizeof(struct account)))
@@ -46,20 +48,39 @@ int main (int argc, char ** argv) {
         /* Found. */
         if (!strcmp(password, a.password))
         {
+            setgid(a.gid);
+            setuid(a.uid);
             goto found;
         }
     }
+
+    ret = 0;
     fprintf(stderr, "\nwrong login or password\n\n");
-    return 0;
 
 found:
 
+    uid = a.uid;
     /* House keeping. */
     close(file);
 
-    printf("Changing euid from %d to %d\n", geteuid(), (int)a.uid);
+    return (ret);
+}
 
-    // we set the new euid
-    seteuid(a.uid);
-    return 0;
+int main (int argc, char ** argv) {
+    if (argc < 2) {
+        printf("USAGE : su [user]\n");
+        return 0;
+    }
+
+    char *name = argv[1];
+    char password[PASSWORD_MAX];
+    fgets(password, PASSWORD_MAX, stdin);
+
+    if (authenticate(name, password)) {
+        seteuid(uid);
+        printf("Success\nYour new euid is %d\n", geteuid());
+        return 0;
+    }
+    printf("Authentication failed\n");
+    return 1;
 }
