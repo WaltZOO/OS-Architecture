@@ -80,7 +80,6 @@ char *crack(char *username)
                     return password;
             }
         }
-        printf("i = %d\n", i);
     }
     return NULL;
 }
