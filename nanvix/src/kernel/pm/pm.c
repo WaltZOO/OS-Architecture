@@ -66,6 +66,8 @@ PUBLIC pid_t next_pid = 0;
  */
 PUBLIC unsigned nprocs = 0;
 
+int nb_proc_user[MAX_USER];
+
 /**
  * @brief Initializes the process management system.
  */
@@ -122,6 +124,5 @@ PUBLIC void pm_init(void)
 	IDLE->chain = NULL;
 
 	nprocs++;
-
 	enable_interrupts();
 }

@@ -100,14 +100,14 @@ static void printUsers(void)
 	}
 
 	/* Search in the  passwords file. */
-	printf("List of users & uid\n");
+	printf("List of users\n");
 
 	while (read(file, &a, sizeof(struct account)))
 	{
 		account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
 
 		/* user found. */
-		printf("	%s %d\n", a.name, a.uid);
+		printf("username: %s uid: %d gid: %d\n", a.name, a.uid, a.gid);
 	}
 	printf("\n");
 

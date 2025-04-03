@@ -602,9 +602,9 @@ int forkbomb_test(){
 	return 0;
 }
 
-/*============================================================================*
- *                                   main                                     *
- *============================================================================*/
+	/*============================================================================*
+	 *                                   main                                     *
+	 *============================================================================*/
 
 /**
  * @brief Prints program usage and exits.
@@ -623,55 +623,55 @@ static void usage(void)
 	printf("  sched Scheduling Test\n");
 	printf("  sec 	Security Test\n");
 
-	exit(EXIT_SUCCESS);
-}
+		exit(EXIT_SUCCESS);
+	}
 
-/**
- * @brief System testing utility.
- */
-int main(int argc, char **argv)
-{
-	/* Missing arguments? */
-	if (argc <= 1)
-		usage();
-
-	for (int i = 1; i < argc; i++)
+	/**
+	 * @brief System testing utility.
+	 */
+	int main(int argc, char **argv)
 	{
-		/* I/O test. */
-		if (!strcmp(argv[i], "io"))
-		{
-			printf("I/O Test\n");
-			printf("  Result:             [%s]\n",
-				(!io_test()) ? "PASSED" : "FAILED");
-		}
+		/* Missing arguments? */
+		if (argc <= 1)
+			usage();
 
-		/* Swapping test. */
-		else if (!strcmp(argv[i], "swp"))
+		for (int i = 1; i < argc; i++)
 		{
-			printf("Swapping Test\n");
-			printf("  Result:             [%s]\n",
-				(!swap_test()) ? "PASSED" : "FAILED");
-		}
+			/* I/O test. */
+			if (!strcmp(argv[i], "io"))
+			{
+				printf("I/O Test\n");
+				printf("  Result:             [%s]\n",
+					   (!io_test()) ? "PASSED" : "FAILED");
+			}
 
-		/* Scheduling test. */
-		else if (!strcmp(argv[i], "sched"))
-		{
-			printf("Scheduling Tests\n");
-			printf("  waiting for child  [%s]\n",
-				(!sched_test0()) ? "PASSED" : "FAILED");
-			printf("  dynamic priorities [%s]\n",
-				(!sched_test1()) ? "PASSED" : "FAILED");
-			printf("  scheduler stress   [%s]\n",
-				(!sched_test2() && !sched_test3()) ? "PASSED" : "FAILED");
-		}
+			/* Swapping test. */
+			else if (!strcmp(argv[i], "swp"))
+			{
+				printf("Swapping Test\n");
+				printf("  Result:             [%s]\n",
+					   (!swap_test()) ? "PASSED" : "FAILED");
+			}
 
-		/* IPC test. */
-		else if (!strcmp(argv[i], "ipc"))
-		{
-			printf("Interprocess Communication Tests\n");
-			printf("  producer consumer [%s]\n",
-				(!semaphore_test3()) ? "PASSED" : "FAILED");
-		}
+			/* Scheduling test. */
+			else if (!strcmp(argv[i], "sched"))
+			{
+				printf("Scheduling Tests\n");
+				printf("  waiting for child  [%s]\n",
+					   (!sched_test0()) ? "PASSED" : "FAILED");
+				printf("  dynamic priorities [%s]\n",
+					   (!sched_test1()) ? "PASSED" : "FAILED");
+				printf("  scheduler stress   [%s]\n",
+					   (!sched_test2() && !sched_test3()) ? "PASSED" : "FAILED");
+			}
+
+			/* IPC test. */
+			else if (!strcmp(argv[i], "ipc"))
+			{
+				printf("Interprocess Communication Tests\n");
+				printf("  producer consumer [%s]\n",
+					   (!semaphore_test3()) ? "PASSED" : "FAILED");
+			}
 
 		/* FPU test. */
 		else if (!strcmp(argv[i], "fpu"))
@@ -689,10 +689,10 @@ int main(int argc, char **argv)
 				   (!forkbomb_test()) ? "PASSED" : "FAILED");
 		}
 
-		/* Wrong usage. */
-		else
-			usage();
-	}
+			/* Wrong usage. */
+			else
+				usage();
+		}
 
-	return (EXIT_SUCCESS);
-}
+		return (EXIT_SUCCESS);
+	}
