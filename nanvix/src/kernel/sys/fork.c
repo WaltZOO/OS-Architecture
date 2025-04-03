@@ -49,7 +49,7 @@ PUBLIC pid_t sys_fork(void)
 
 #endif
 	nb_proc_user[curr_proc->euid]++;
-	if ((nb_proc_user[curr_proc->euid] + 1 >= MAX_PROC_PER_USER) && (!IS_SUPERUSER(curr_proc)))
+	if ((!IS_SUPERUSER(curr_proc)) && (nb_proc_user[curr_proc->euid] > MAX_PROC_PER_USER))
 		return (-EAGAIN);
 
 	// for (int i = 0; i < 5; i++){
@@ -69,8 +69,6 @@ PUBLIC pid_t sys_fork(void)
 	return (-EAGAIN);
 
 found:
-
-	kprintf("1 process created");
 
 	/* Mark process as beeing created. */
 	proc->flags = 1 << PROC_NEW;

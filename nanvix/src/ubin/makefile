@@ -45,11 +45,16 @@
 .PHONY: sleep
 .PHONY: euid
 .PHONY: su
+.PHONY: crack
 
 # Builds everything.
 all: cat chgrp chmod chown cp echo kill ln login ls mv nice pwd rm stat sync \
-	 touch tsh ps clear nim sleep euid su
+	 touch tsh ps clear nim sleep euid su crack
 
+# Builds crack.
+crack: 
+	$(CC) $(CFLAGS) $(LDFLAGS) crack/*.c -o $(UBINDIR)/crack $(LIBDIR)/libc.a
+	
 # Builds su.
 su: 
 	$(CC) $(CFLAGS) $(LDFLAGS) su/*.c -o $(UBINDIR)/su $(LIBDIR)/libc.a
