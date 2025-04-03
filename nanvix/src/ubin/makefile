@@ -43,11 +43,21 @@
 .PHONY: clear
 .PHONY: nim
 .PHONY: sleep
+.PHONY: euid
+.PHONY: su
 
 # Builds everything.
 all: cat chgrp chmod chown cp echo kill ln login ls mv nice pwd rm stat sync \
-	 touch tsh ps clear nim sleep
+	 touch tsh ps clear nim sleep euid su
 
+# Builds su.
+su: 
+	$(CC) $(CFLAGS) $(LDFLAGS) su/*.c -o $(UBINDIR)/su $(LIBDIR)/libc.a
+	
+# Builds euid.
+euid: 
+	$(CC) $(CFLAGS) $(LDFLAGS) euid/*.c -o $(UBINDIR)/euid $(LIBDIR)/libc.a
+	
 # Builds cat.
 cat: 
 	$(CC) $(CFLAGS) $(LDFLAGS) cat/*.c -o $(UBINDIR)/cat $(LIBDIR)/libc.a

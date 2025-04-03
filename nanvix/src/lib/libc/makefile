@@ -37,6 +37,8 @@ C_SRC = $(wildcard *.c)           \
       $(wildcard termios/*.c)     \
       $(wildcard unistd/*.c)      \
       $(wildcard utime/*.c)       \
+      $(wildcard seteuid/*.c)     \
+      $(wildcard geteuid/*.c)     \
 
 # Assembly source files.
 ASM_SRC = $(wildcard signal/*.S) \
