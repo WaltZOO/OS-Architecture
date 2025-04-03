@@ -47,11 +47,16 @@
 .PHONY: su
 .PHONY: crack
 .PHONY: uid
+.PHONY: passwd
 
 # Builds everything.
 all: cat chgrp chmod chown cp echo kill ln login ls mv nice pwd rm stat sync \
-	 touch tsh ps clear nim sleep euid su crack uid
+	 touch tsh ps clear nim sleep euid su crack uid passwd
 
+# Builds passwd.
+passwd: 
+	$(CC) $(CFLAGS) $(LDFLAGS) passwd/*.c -o $(UBINDIR)/passwd $(LIBDIR)/libc.a
+	
 # Builds uid.
 uid: 
 	$(CC) $(CFLAGS) $(LDFLAGS) uid/*.c -o $(UBINDIR)/uid $(LIBDIR)/libc.a
