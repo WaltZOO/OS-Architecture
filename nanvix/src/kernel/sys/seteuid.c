@@ -21,26 +21,14 @@
 #include <nanvix/pm.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <nanvix/klib.h>
 
 /*
  * Sets the effective user ID of the calling process.
  */
 PUBLIC int sys_seteuid(uid_t uid)
 {
-	/* Superuser authentication. */
-	if (IS_SUPERUSER(curr_proc))
-		curr_proc->euid = uid;
-
-	else
-	{
-		/* User authentication. */
-		if ((uid == curr_proc->uid) || (uid == curr_proc->suid))
-			curr_proc->euid = uid;
-
-		/* No authentication. */
-		else
-			return (-EPERM);
-	}
-
+	kprintf("ici");
+	curr_proc->euid = uid;
 	return (0);
 }

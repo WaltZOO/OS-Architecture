@@ -70,8 +70,6 @@ PUBLIC pid_t sys_fork(void)
 
 found:
 
-	kprintf("1 process created");
-
 	/* Mark process as beeing created. */
 	proc->flags = 1 << PROC_NEW;
 
