@@ -49,12 +49,12 @@ PUBLIC pid_t sys_fork(void)
 
 #endif
 	nb_proc_user[curr_proc->euid]++;
-	if ((nb_proc_user[curr_proc->euid] + 1 >= MAX_PROC_PER_USER) && (!IS_SUPERUSER(curr_proc)))
+	if ((!IS_SUPERUSER(curr_proc)) && (nb_proc_user[curr_proc->euid] > MAX_PROC_PER_USER))
 		return (-EAGAIN);
 
-	// for (int i = 0; i < 5; i++){
-	// 	kprintf("%d process for user %d\n", nb_proc_user[i], i);
-	// }
+	for (int i = 0; i < 5; i++){
+		kprintf("%d process for user %d\n", nb_proc_user[i], i);
+	}
 
 		/* Search for a free process. */
 		for (proc = FIRST_PROC; proc <= LAST_PROC; proc++)
