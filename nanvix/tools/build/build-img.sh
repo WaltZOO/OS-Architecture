@@ -87,6 +87,22 @@ function eject {
 	losetup -d $1
 }
 
+function popular
+{
+	file="popular"
+
+	# chmod 666 tools/$file
+	# Let's care about security...
+	if [ "$EDUCATIONAL_KERNEL" == "0" ]; then
+		chmod 600 tools/$file
+	fi
+
+	bin/cp.minix $1 tools/$file /etc/$file $ROOTUID $ROOTGID
+
+	# House keeping.
+	rm -f $file
+}
+
 # Generate passwords file
 #   $1 Disk image name.
 #
@@ -108,6 +124,7 @@ function passwords
 	# House keeping.
 	rm -f $file
 }
+
 
 #
 # Formats a disk.
@@ -144,6 +161,9 @@ function copy_files
 	bin/cp.minix $1 tools/img/inittab /etc/inittab $ROOTUID $ROOTGID
 
 	passwords $1
+
+	popular $1
+
 
 	for file in bin/sbin/*; do
 		filename=`basename $file`

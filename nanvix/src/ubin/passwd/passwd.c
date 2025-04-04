@@ -64,6 +64,39 @@ found:
     return (ret);
 }
 
+void remove_newline(char *str)
+{
+    size_t len = strlen(str);
+    if (len > 0 && str[len - 1] == '\n')
+        str[len - 1] = '\0';
+}
+
+static int verify_dictionary(const char *password)
+{
+    FILE *dict = fopen("/etc/popular", "r") ;
+    char line[PASSWORD_MAX];
+    if (dict  == NULL)
+    {
+        fprintf(stderr, "password dictionary unavailable at %s\n", "/etc/popular");
+        return 0;
+    }
+    int i = 0;
+    
+    while (fgets(line, sizeof(line), dict))
+    {
+        remove_newline(line);
+        if (strcmp(line, password) == 0)
+        {
+            fclose(dict);
+            return 1;
+        }
+        i++;
+    }
+
+    fclose(dict);
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 2)
@@ -84,8 +117,15 @@ int main(int argc, char **argv)
     }
 
     fgets(new, PASSWORD_MAX, stdin);
-    fgets(new2, PASSWORD_MAX, stdin);
+    remove_newline(new);
+    if (verify_dictionary(new))
+    {
+        fprintf(stderr, "Password rejected: too common (found in dictionary)\n");
+        return 1;
+    }
 
+    fgets(new2, PASSWORD_MAX, stdin);
+    remove_newline(new);
     if (strcmp(new, new2) != 0)
     {
         printf("passwords do not match\n");
@@ -111,6 +151,7 @@ int main(int argc, char **argv)
         if (strcmp(name, a.name) != 0 )
             continue;
 
+        
         strcpy(a.password, new);
         account_encrypt(a.name, USERNAME_MAX, KERNEL_HASH);
         account_encrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
