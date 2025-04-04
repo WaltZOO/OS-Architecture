@@ -20,3 +20,4 @@ nanvix/nanvix.iso
 .idea
 
 .vscode
+!nanvix/tools/popular
