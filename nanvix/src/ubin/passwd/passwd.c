@@ -112,6 +112,7 @@ int main(int argc, char **argv)
             continue;
 
         strcpy(a.password, new);
+        account_encrypt(a.name, USERNAME_MAX, KERNEL_HASH);
         account_encrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
 
         // changer mot de passe
