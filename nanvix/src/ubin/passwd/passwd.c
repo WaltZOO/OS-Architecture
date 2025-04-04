@@ -27,7 +27,7 @@ static int authenticate(const char *name, const char *password)
     ret = 1;
 
     /* Open passwords file. */
-    if ((file = open("/etc/passwords", O_RDONLY)) == -1)
+    if ((file = open("/etc/passwords", O_RDONLY)) == -1)    
     {
         fprintf(stderr, "cannot open password file\n");
         return (0);
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     struct account a; /* Working account. */
 
     /* Open passwords file. */
-    if ((file = open("/etc/passwords", O_RDONLY)) == -1)
+    if ((file = open("/etc/passwords", O_RDWR)) == -1)
     {
         fprintf(stderr, "cannot open password file\n");
         return 1;
