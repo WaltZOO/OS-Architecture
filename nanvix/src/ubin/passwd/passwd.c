@@ -84,10 +84,9 @@ int main(int argc, char **argv)
     }
 
     fgets(new, PASSWORD_MAX, stdin);
-
     fgets(new2, PASSWORD_MAX, stdin);
 
-    if (strcmp(new, new2))
+    if (strcmp(new, new2) != 0)
     {
         printf("passwords do not match\n");
         return 1;
@@ -100,18 +99,19 @@ int main(int argc, char **argv)
     if ((file = open("/etc/passwords", O_RDONLY)) == -1)
     {
         fprintf(stderr, "cannot open password file\n");
-        return (0);
+        return 1;
     }
 
-    if (strcmp(new2, new) != 0)
+    /* Search in the  passwords file. */
+    while (read(file, &a, sizeof(struct account)))
     {
-        fprintf(stderr, "passwords do not match. Exiting\n");
-        exit(1);
-    }
-    else
-    {
+        account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
+
+        /* No this user. */
+        if (strcmp(name, a.name) != 0 )
+            continue;
+
         strcpy(a.password, new);
-        account_encrypt(a.name, USERNAME_MAX, KERNEL_HASH);
         account_encrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
 
         // changer mot de passe
@@ -120,5 +120,8 @@ int main(int argc, char **argv)
         printf("Password succesfully updated.\n");
         return 0;
     }
-    // NE MARCHE PAS 
+
+    fprintf(stderr, "cannot find user %s\n", name);
+    close(file);
+    return 1;
 }
