@@ -1,11 +1,11 @@
 # OS-Architecture - Nanvix Projects
 
-**Contributors:**  
-Erwan Poncin : https://github.com/erwanponcin
+## Contributors: 
+**Erwan Poncin** : https://github.com/erwanponcin
 
-Maxime Bossant : https://github.com/WaltZOO
+**Maxime Bossant** : https://github.com/WaltZOO
 
-Maxence Maury : https://github.com/MixiMaxiMouse
+**Maxence Maury** : https://github.com/MixiMaxiMouse
 
 ## Overview
 
